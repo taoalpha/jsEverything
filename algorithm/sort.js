@@ -263,8 +263,9 @@ class SortAlgo {
 }
 
 // test
-let list = Array(50).fill(0).map( () => Math.random()*50);
-let k = new SortAlgo(list,"heap");
+let max = 500000
+let list = Array(max).fill(0).map( () => Math.random()*max);
+let k = new SortAlgo(list,"quick");
 
-let l = k.sort();
-console.log(l)
+k.sort()
+console.log(k.cost)
