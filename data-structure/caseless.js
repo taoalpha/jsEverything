@@ -1,9 +1,12 @@
 /**
  * Class representing a caseless dictionary
+ * @author Tao <tao@taoalpha.me>
+ * @class
  */
 class Caseless {
     /**
      * Create a caseless dictionary
+     * @constructs Caseless
      * @param {object} obj - Create the caseless dict based on existed dictionary
      * @param {boolean} clobber - Indicate whether overwrite or concatenate values
      */
@@ -13,8 +16,10 @@ class Caseless {
         if (obj) this.clean(obj);
     }
     /**
-     * Getter for caseless dictionary
+     * Get the value by name
+     * @method get
      * @param {string|symbol} name - The name you want to get the value by
+     * @returns {(boolean|*)} - Either return the value matched the name or false if not found.
      */
     get(name) {
         let map = this.dict;
@@ -28,7 +33,9 @@ class Caseless {
     }
     /**
      * Check existence of a given name
-     * @param {string|symbol} name - The name you want to check
+     * @method has
+     * @param {(string|symbol)} name - The name you want to check
+     * @returns {(boolean|string|symbol)} - Either return the found name or false if not found.
      */
     has(name) {
         let keys = Reflect.ownKeys(this.dict);
@@ -39,9 +46,11 @@ class Caseless {
         return false;
     }
     /**
-     * Setter for caseless dictionary
-     * @param {string|symbol} name - The name you want to associate the value with
+     * Set a value to a name
+     * @method set
+     * @param {(string|symbol)} name - The name you want to associate the value with
      * @param {*} value - The value you want to store
+     * @returns {boolean} - Set successfully or not.
      */
     set(name,value) {
         let has = this.has(name);
@@ -56,7 +65,8 @@ class Caseless {
     }
     /**
      * Replace the exist key
-     * @params {string|symbol} name - The name you want to replace the exist one
+     * @method swap
+     * @params {(string|symbol)} name - The name you want to replace the exist one
      */
     swap(name) {
         // replace the key matched with new name
@@ -68,7 +78,7 @@ class Caseless {
     }
     /**
      * Delete an entry in caseless dictionary 
-     * @param {string|symbol} name - The name of the entry you want to delete
+     * @param {(string|symbol)} name - The name of the entry you want to delete
      */
     del(name) {
         let has = this.has(name);

@@ -1,12 +1,15 @@
 /**
  * Collection of Sorting algorithms.
+ * @class SortAlgo
+ * @author Tao <tao@taoalpha.me>
  */
 
 class SortAlgo {
     /**
      * Create a SortAlgo and set the default sorting algorithm
-     * @params {array} - The array you want to sort
-     * @params {string} - The name of the default sorting algorithm
+     * @constructs SortAlgo
+     * @param {array} list - The array you want to sort
+     * @param {string} name - The name of the default sorting algorithm
      */
     constructor(list, name) {
         if (!list instanceof Array) throw new TypeError("Expected array", "sort.js", 14);
@@ -17,12 +20,17 @@ class SortAlgo {
     }
     /**
      * Run sort
+     * @return {array} - Sorted list
      */
     sort() {
-        return this[this.algo]();
+        let start = new Date();
+        this[this.algo]();
+        this.cost = new Date() - start;
+        return this.list;
     }
     /**
      * The insertion sort
+     * @return {array} - Sorted list
      */
     insertion() {
         let list = this.list;
@@ -38,6 +46,7 @@ class SortAlgo {
     }
     /**
      * The selection sosrt
+     * @return {array} - Sorted list
      */
     selection() {
         let list = this.list,
@@ -53,6 +62,7 @@ class SortAlgo {
     }
     /**
      * Bubble sosrt
+     * @return {array} - Sorted list
      */
     bubble() {
         let list = this.list,
@@ -70,6 +80,7 @@ class SortAlgo {
     }
     /**
      * Couting sort
+     * @return {array} - Sorted list
      */
     counting() {
         let list = this.list,
@@ -89,7 +100,8 @@ class SortAlgo {
     }
     /**
      * Merge sort
-     * @params {array} list - The list you want to sort, default will be this.list
+     * @param {array} list - The list you want to sort, default will be this.list
+     * @return {array} - Sorted list
      */
     merge(list = this.list) {
         if (list.length <= 1) return list;
@@ -99,8 +111,9 @@ class SortAlgo {
     }
     /**
      * Helper function for merge two sub-lists
-     * @params: {array} list - Left sub-list
-     * @params: {array} right - Right sub-list
+     * @param: {array} list - Left sub-list
+     * @param: {array} right - Right sub-list
+     * @return {array} - Merged list
      */
     mergeHelper(left, right) {
         let i = 0, j = 0,
@@ -117,8 +130,9 @@ class SortAlgo {
     }
     /**
      * Quick Sort
-     * @params {number} left - left index of this round of sort, default initial value is 0
-     * @params {number} right - right index of this round of sort, default initial value is list.length - 1
+     * @param {number} left - left index of this round of sort, default initial value is 0
+     * @param {number} right - right index of this round of sort, default initial value is list.length - 1
+     * @return {array} - Sorted list
      */
     quick(left = 0, right = this.list.length-1) {
         let idx = this.partition(left,right);
@@ -133,8 +147,9 @@ class SortAlgo {
     }
     /**
      * Helper function for quick sort - partition
-     * @params {number} begin - begin index of this round of partition
-     * @params {number} end - end index of this round of partition
+     * @param {number} begin - begin index of this round of partition
+     * @param {number} end - end index of this round of partition
+     * @return {number} - Separator's index.
      */
     partition(begin, end) {
         let list = this.list,
@@ -157,6 +172,7 @@ class SortAlgo {
     }
     /**
      * Radix sort - only for integers
+     * @return {array} - Sorted list
      */
     radix() {
 		let list = this.list,
@@ -182,6 +198,7 @@ class SortAlgo {
     }
     /**
      * Heap sort
+     * @return {array} - Sorted list
      */
     heap() {
 		let list = this.list;
@@ -204,8 +221,8 @@ class SortAlgo {
 	}
     /** 
      * Heapify from idx to max
-     * @params {number} start - start index
-     * @params {number} end - end index
+     * @param {number} start - start index
+     * @param {number} end - end index
      */
 	heapify(start, end) {
 		let list = this.list,
@@ -221,8 +238,8 @@ class SortAlgo {
 	}
 	/**
 	 * Swap two elements' position
-	 * @params {number} i - The first element's index
-	 * @params {number} j - The second element's index
+	 * @param {number} i - The first element's index
+	 * @param {number} j - The second element's index
 	 */
 	swap(i,j) {
 		let temp = this.list[i];
@@ -231,8 +248,9 @@ class SortAlgo {
 	}
 	/**
 	 * get nth digit of the number
-	 * @params {number} num - The number
-	 * @params {number} nth - nth digit we want
+	 * @param {number} num - The number
+	 * @param {number} nth - nth digit we want
+     * @return {number} - The nth digit
 	 */
 	getDigit(num,nth) {
 		var ret = 0;
