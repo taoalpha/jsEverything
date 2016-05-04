@@ -1,3 +1,6 @@
 module.exports = {
-    extend: false
+    extend: false,
+    theme: {
+        error: "red"
+    }
 }

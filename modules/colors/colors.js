@@ -13,35 +13,79 @@ let codes = require("./codes");
 let CONFIG = require("./config")
 
 /**
- * Combine string with proper colors.
- * @param {string} str - Input string
+ * class Colors, will return one instance of this class
  */
-function colors(str) {
-    return this.prefix.join("") + str + this.postfix.join("")
-};
-colors.prefix = [];
-colors.postfix = [];
-
-/* Extend the String prototype if CONFIG.extend is true */
-if (CONFIG.extend) {
-    Reflect.ownKeys(codes).map( (name) => {
-        Object.defineProperty(String.prototype, name, { get: function () { return codes[name].open + this + codes[name].close; } });
-    } )
+class Colors {
+    /**
+     * init with empty prefix and postfix
+     * @constructor
+     */
+    constructor() {
+        this.prefix = [];
+        this.postfix = [];
+    }
+    /**
+     * Color the string
+     * @param {string} str - the string you want to color it
+     * @return {string} - colored string
+     */
+    colors(str) {
+        let res = this.prefix.join("") + str + this.postfix.join("")
+        this.prefix = [];
+        this.postfix = [];
+        return res;
+    }
+    /**
+     * Extend string prototype
+     */
+    extend() {
+        Reflect.ownKeys(codes).map( (name) => {
+            Object.defineProperty(String.prototype, name, {
+                get: function() { return codes[name].open + this + codes[name].close;}
+            });
+        } )
+    }
+    /**
+     * Build the function chain
+     */
+    build() {
+        /* set getter for our colors */
+        Reflect.ownKeys(codes).map( (name) => {
+            Object.defineProperty(this.colors, name, { 
+                get: function () { 
+                    this.prefix = [codes[name].open].concat(this.prefix);
+                    this.postfix = [codes[name].close].concat(this.postfix);
+                    return this;
+                } 
+            });
+        } )
+    }
+    /**
+     * Apply the theme if we have
+     * @param {object} theme - pair of theme-name with color name
+     */
+    applyTheme(theme) {
+        /* apply theme if we have one*/
+        Reflect.ownKeys(theme).map( (name) => {
+            Object.defineProperty(this.colors, name, { 
+                get: function () { 
+                    this.prefix = [codes[theme[name]].open].concat(this.prefix);
+                    this.postfix = [codes[theme[name]].close].concat(this.postfix);
+                    return this;
+                } 
+            });
+        } )
+    }
 }
 
+let c = new Colors();
+c.build();
 
-// set getter
-Reflect.ownKeys(codes).map( (name) => {
-    Object.defineProperty(colors, name, { 
-        get: function () { 
-            this.prefix = [codes[name].open].concat(this.prefix);
-            this.postfix = [codes[name].close].concat(this.postfix);
-            return this;
-        } 
-    });
-} )
+if (CONFIG.extend) {
+    c.extend();
+}
+if (CONFIG.theme) {
+    c.applyTheme(CONFIG.theme);
+}
 
-
-// test
-let a  = "asdasd";
-console.log(colors.yellow.bold.underline(a))
+module.exports = c.colors;
