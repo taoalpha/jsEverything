@@ -30,20 +30,30 @@ class Colors {
      * @return {string} - colored string
      */
     colors(str) {
-        let res = this.prefix.join("") + str + this.postfix.join("")
+        let res = this.prefix.join("") + str + this.postfix.join("");
         this.prefix = [];
         this.postfix = [];
         return res;
     }
     /**
      * Extend string prototype
+     * @param {boolean} enable - Enable the extend or not
      */
-    extend() {
-        Reflect.ownKeys(codes).map( (name) => {
-            Object.defineProperty(String.prototype, name, {
-                get: function() { return codes[name].open + this + codes[name].close;}
-            });
-        } )
+    extend(enable) {
+        // if we never extended before and now we want to extend
+        if (String.colorExtend === false && enable) {
+            Reflect.ownKeys(codes).map( (name) => {
+                Object.defineProperty(String.prototype, name, {
+                    get: function() { return codes[name].open + this + codes[name].close;}
+                });
+            } )
+        }
+        // we extended String before and now we want to remove
+        if (String.colorExtend === true && !enable) {
+            Reflect.ownKeys(codes).map( (name) => {
+                delete String.prototype[name]
+            } )
+        }
     }
     /**
      * Build the function chain
@@ -59,6 +69,10 @@ class Colors {
                 } 
             });
         } )
+
+        /* forward the applyTheme call to this.colors to this.applyTheme */
+        this.colors.applyTheme = this.applyTheme.bind(this);
+        this.colors.setTheme = this.applyTheme.bind(this);
     }
     /**
      * Apply the theme if we have
@@ -69,23 +83,35 @@ class Colors {
         Reflect.ownKeys(theme).map( (name) => {
             Object.defineProperty(this.colors, name, { 
                 get: function () { 
-                    this.prefix = [codes[theme[name]].open].concat(this.prefix);
-                    this.postfix = [codes[theme[name]].close].concat(this.postfix);
+                    let prefix = [], postfix = [];
+                    if (theme[name] instanceof Array) {
+                        prefix = theme[name].map( (item) => codes[item].open );
+                        postfix = theme[name].map( (item) => codes[item].close );
+                    } else if (typeof theme[name] == "string") {
+                        prefix = [codes[theme[name]].open];
+                        postfix = [codes[theme[name]].close];
+                    }
+                    this.prefix = prefix.concat(this.prefix);
+                    this.postfix = postfix.concat(this.postfix);
                     return this;
                 } 
             });
         } )
+    }
+    /**
+     * Load configurations
+     * @param {obj} config - Configuration you want to set
+     */
+    loadConfig(config) {
+        this.extend(config.extend);
+        if (config.theme instanceof Object) {
+            this.applyTheme(config.theme);
+        }
     }
 }
 
 let c = new Colors();
 c.build();
 
-if (CONFIG.extend) {
-    c.extend();
-}
-if (CONFIG.theme) {
-    c.applyTheme(CONFIG.theme);
-}
-
+c.loadConfig(CONFIG);
 module.exports = c.colors;
