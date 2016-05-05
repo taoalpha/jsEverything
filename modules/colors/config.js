@@ -1,5 +1,5 @@
 module.exports = {
-    extend: true,
+    dirty: true,
     theme: {
     }
 }

@@ -21,9 +21,8 @@ class Colors {
         // all origin properties of String.prototype are blacklist
         this.stringPrototypeBlacklist = Reflect.ownKeys(String.prototype);
         this.stringPrototypeWhitelist = ["bold","italics"];
-        this.safeMode = true;
-		this.prefix = [];
-		this.postfix = [];
+        this.dirtyMode = false;
+        this.props = [];
 	}
 	/**
 	 * Color the string
@@ -40,17 +39,23 @@ class Colors {
 	 * Extend string prototype
 	 * @param {boolean} enable - Enable the extend or not
 	 */
-	extend(enable) {
+	dirty(enable) {
+        this.dirtyMode = enable;
         let flag = typeof String.prototype.red;
         // extend current colors
         Reflect.ownKeys(this.colors).map( (name) => {
-            // skip functions we defined
+            // skip functions we defined like clear, applyTheme...
             if (Object.keys(this.colors).indexOf(name) !== -1) return;
+
             // skip all static names like length... etc
             if (typeof this.colors[name] != "function") return;
+
+            // clear since we use the get for typeof
+            this.clear();
+
             // if we never extended before and now we want to extend
             if (flag === 'undefined' && enable) {
-                // skip the blacklist if we are in safemode, but white list has a higher prioty
+                // skip the blacklist but white list has a higher prioty
                 if (this.stringPrototypeBlacklist.indexOf(name) !== -1 && this.stringPrototypeWhitelist.indexOf(name) === -1) { 
                     console.log(this.colors.red('warn: ') + this.colors.magenta('String.prototype.' + name) + ' is probably something you don\'t want to override. Ignoring style name');
                 }else{
@@ -58,10 +63,16 @@ class Colors {
                     let that = this;
                     Object.defineProperty(String.prototype, name, {
                         configurable: true,
-                        get: function() { that.colors.prefix = []; that.colors.postfix = [];return that.colors[name].prefix + this + that.colors[name].postfix;}
+                        get: function() { 
+                            that.clear();
+                            let temp = that.colors[name];
+                            let colordStr = temp.prefix + this + temp.postfix;
+                            return colordStr;
+                        }
                     });
                 }
             }
+
             // we extended String before and now we want to remove
             if (flag !== 'undefined' && !enable) {
                 if (this.stringPrototypeBlacklist.indexOf(name) !== -1 && this.stringPrototypeWhitelist.indexOf(name) === -1) { 
@@ -81,7 +92,10 @@ class Colors {
     genProps(pairs){
         let props = {};
         Reflect.ownKeys(pairs).map( (prop_name) => {
+            this.props.push(prop_name);
+            this.props = this.uniq(this.props);
             props[prop_name] = {
+                configurable: true,
                 get: function () { 
                     let prefix = [], postfix = [];
                     if (pairs[prop_name] instanceof Array) {
@@ -127,8 +141,10 @@ class Colors {
         this.colors.applyTheme = this.applyTheme.bind(this);
         this.colors.setTheme = this.applyTheme.bind(this);
         this.colors.uniq = this.uniq.bind(this);
-        this.colors.extend = this.extend.bind(this);
+        this.colors.clear = this.clear.bind(this);
+        this.colors.dirty = this.dirty.bind(this);
         this.colors.loadConfig = this.loadConfig.bind(this);
+        this.colors.getProps = this.getProps.bind(this);
     }
     /**
      * Apply the theme if we have
@@ -143,14 +159,54 @@ class Colors {
      * @param {obj} config - Configuration you want to set
      */
     loadConfig(config) {
-        this.extend(config.extend);
+        this.dirty(config.dirty);
         if (config.theme instanceof Object) {
             this.applyTheme(config.theme);
         }
+    }
+    /**
+     * Define extra features by name - getFunction pair
+     * @param {string} name - The name
+     * @param {function} getter - The getter function
+     */
+    extend(name,getter){
+        Object.defineProperty(this.colors,name,{ 
+            configurable: true,
+            get: getter.bind(this.colors)
+        });
+        if (this.dirtyMode) {
+            console.log("should not see this")
+            this.dirty(true);
+        }
+    }
+    /**
+     * Get props
+     */
+    getProps(){
+        return this.props;
+    }
+    /** 
+     * Clear prefix and postfix
+     */
+    clear(){
+        this.colors.prefix = [];
+        this.colors.postfix = [];
     }
 }
 
 let c = new Colors();
 c.build();
+
+
+c.extend("random", function() {
+    let prefix = [], postfix = [], totalNum = 0, colorList = this.getProps();
+    totalNum = colorList.length;
+    let prop_name = colorList[parseInt(Math.random() * totalNum)];
+    prefix = this[prop_name].prefix;
+    postfix = this[prop_name].postfix;
+    this.prefix = this.uniq(prefix.concat(this.prefix));
+    this.postfix = this.uniq(postfix.concat(this.postfix));
+    return this;
+})
 
 module.exports = c.colors;
