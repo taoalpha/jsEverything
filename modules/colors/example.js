@@ -42,7 +42,7 @@ console.log('Setting themes is useful')
 //console.log('Generic logging theme as JSON'.green.bold.underline);
 // Load theme with JSON literal
 colors.setTheme({
-  silly: 'rainbow',
+  //silly: 'rainbow',
   input: ['grey'],
   verbose: 'cyan',
   prompt: 'grey',
@@ -51,6 +51,7 @@ colors.setTheme({
   help: 'cyan',
   warn: 'yellow',
   debug: 'blue',
+  match: 'red',
   error: 'red'
 });
 
@@ -79,3 +80,14 @@ console.log(colors.input("this is an input"));
 // console.log(colors.input("this is an input"));
 
 // console.log(colors.zalgo("Don't summon him"))
+//* @const {object} - Import configuration */
+let CONFIG = require("./config")
+
+colors.loadConfig(CONFIG);
+
+console.log("SB!".red);
+console.log("SB!".underline);
+console.log("SB!".bold);
+
+colors.extend(false);
+console.log("SB!".underline);
