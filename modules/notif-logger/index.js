@@ -9,16 +9,20 @@
   	// request for notification access
 		Notification.requestPermission().then(function(result) {
 		  if (result === 'denied') {
+        // detach console.log if no permission
         logger.detach();
 		    console.log('Permission wasn\'t granted. Allow a retry.');
 		    return;
 		  }
 		  if (result === 'default') {
+        // detach console.log if no preference set on permission
         logger.detach();
 		    console.log('The permission request was dismissed.');
 		    return;
 		  }
-		  // Do something with the granted permission.
+
+      // have the permission
+      // TODO: check body type
       var options = {
 	        body: body,
 	        icon: icon 
@@ -35,7 +39,10 @@
 			console.log = _log;
 		}
   }
+
+  // attach logger.log to console.log
   console.log = function() {
+    // TODO: add default title if no title specified
 		window.logger.log.apply(window.logger, arguments);
 		_log.apply(console, arguments);
   }; 
