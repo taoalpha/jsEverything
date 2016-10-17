@@ -17,3 +17,6 @@ Currently have:
     1. caseless dictionary: from [Caseless object](https://www.npmjs.com/package/caseless), add symbol support, remove the httpify.
 - Algorithms:
     1. sorting algorithms (insertion, selection, bubble, merge, quick, bucket, radix, heap, counting)
+- Modules:
+    1. colors
+    2. notif-logger
