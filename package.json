@@ -1,0 +1,23 @@
+{
+  "name": "js-everything",
+  "version": "1.0.0",
+  "description": "JS is my primary language and I believe it is the best language from my point of view: it is the best language to implement both functional programming and object oriented programming. So I build this repo to record all those scripts that I wrote during the learning and practicing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taoalpha/jsEverything.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/taoalpha/jsEverything/issues"
+  },
+  "homepage": "https://github.com/taoalpha/jsEverything#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2"
+  }
+}
